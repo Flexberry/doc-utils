@@ -12,7 +12,7 @@ namespace FlexDocCheckLinks
     {
         static void Main(string[] args)
         {
-            string s_test_dir = @"C:\Users\svolkov.ICS_HOME\Desktop\dev\flexberry.github.io\pages\guides\base-tech\debugging";
+            string s_test_dir = @"";
             Console.WriteLine($"Directory: {s_test_dir}");
 
             string[] fullfilesPath =
