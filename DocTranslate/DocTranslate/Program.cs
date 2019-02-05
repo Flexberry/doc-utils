@@ -12,11 +12,11 @@ namespace FlexDocCheckLinks
     {
         static void Main(string[] args)
         {
-            string s_test_dir = @"C:\Users\Dasha\flexberry.github.io\pages\products\flexberry-winforms\controls";
-            s_test_dir = @"C:\Users\Dasha\flexberry.github.io\pages\products\flexberry-winforms";
+            string s_test_dir = @"C:\Users\svolkov.ICS_HOME\Desktop\dev\flexberry.github.io\pages\guides\base-tech\debugging";
+            Console.WriteLine($"Directory: {s_test_dir}");
 
             string[] fullfilesPath =
-                    Directory.GetFiles(s_test_dir, "fw_*.ru.*",
+                    Directory.GetFiles(s_test_dir, "*.ru.*",
                     SearchOption.AllDirectories);
 
             ArticleTranslator transl = new ArticleTranslator();
@@ -29,11 +29,12 @@ namespace FlexDocCheckLinks
                 }
                 catch (Exception exc)
                 {
+                    Console.WriteLine(exc.Message);
                     Console.WriteLine(fileName);
                 }
             }
 
-            Console.WriteLine("Ready!!!");
+            Console.WriteLine($"Ready!!!\n Skipped old: {transl.skippedOld}, skipped manually translated: {transl.skippedManual}, total translated: {transl.translated}");
 
         }
     }

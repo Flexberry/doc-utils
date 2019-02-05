@@ -17,7 +17,7 @@ namespace DocTranslate
         public string Translate(string s, string lang)
         {
             // NB! Вставить ключ в следующей строке VVVV
-            string sAPIKey = "trnsl.1.1.201.... ТУТ КЛЮЧ, который надо получить на сайте translate.yandex.net";
+            string sAPIKey = "API_KEY_HERE";
 
             if (s.Length > 0)
             {

@@ -10,12 +10,44 @@ namespace DocTranslate
 {
     class ArticleTranslator
     {
+        public int skippedOld = 0;
+        public int skippedManual = 0;
+        public int translated = 0;
 
         // переводит статью из файла, результат перевода записывает в файл
         public void translateFile(string fileName)
         {
-            StreamReader reader = new StreamReader(fileName);
-            string content = reader.ReadToEnd();
+            string shortFileName = Path.GetFileName(fileName);
+            string newFile = Path.Combine(Path.GetDirectoryName(fileName), shortFileName.Replace(".ru.", ".en."));
+            StreamReader reader;
+            string content;
+
+            // если уже существует файл .en.md 
+            if (File.Exists(newFile))
+            {
+                reader = new StreamReader(newFile);
+                content = reader.ReadToEnd();
+                reader.Close();
+
+                // если .en.md изменён позже, чем .ru.md, топропускаем.
+                if (File.GetLastWriteTimeUtc(newFile) > File.GetLastWriteTimeUtc(fileName))
+                {
+                    skippedOld++;
+                    return;
+                }
+
+                // если указан флаг autotranslated: false, то пропускаем.
+                if (content.Contains("autotranslated: false"))
+                {
+                    skippedManual++;
+                    Console.WriteLine($"File {newFile} is marked `autotranslated: false`. Skipping...");
+                    return;
+                }
+
+            }
+
+            reader = new StreamReader(fileName);
+            content = reader.ReadToEnd();
             reader.Close();            
 
             Regex patternCodeBlock = new Regex(@"```(?<примеркода>.*?)```", RegexOptions.Singleline);
@@ -54,8 +86,7 @@ namespace DocTranslate
             translatedContent = translatedContent + "\n\n\n # Переведено сервисом «Яндекс.Переводчик» http://translate.yandex.ru/";
            
 
-            string shortFileName = Path.GetFileName(fileName);
-            string newFile = Path.Combine(Path.GetDirectoryName(fileName), shortFileName.Replace(".ru.", ".en."));
+
 
             if (!File.Exists(newFile))
                 File.AppendAllText(newFile, translatedContent);
@@ -65,6 +96,7 @@ namespace DocTranslate
                 writer.Write(translatedContent);
                 writer.Close();
             }
+            translated++;
         }
 
         private string translateLongText(string preparedContent)
