@@ -16,8 +16,8 @@ namespace DocTranslate
     {
         public string Translate(string s, string lang)
         {
-            // NB! Вставить ключ в следующей строке VVVV
-            string sAPIKey = "API_KEY_HERE";
+            // NB! Вставить ключ в App.config
+            string sAPIKey = System.Configuration.ConfigurationSettings.AppSettings["yandexAPIKey"];
 
             if (s.Length > 0)
             {

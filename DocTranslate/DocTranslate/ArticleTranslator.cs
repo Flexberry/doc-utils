@@ -8,13 +8,30 @@ using System.Threading.Tasks;
 
 namespace DocTranslate
 {
+    /// <summary>
+    /// Класс, содержащий в себе методы разбора/сбора статьи и передачи частей в переводчик.
+    /// </summary>
     class ArticleTranslator
     {
+        /// <summary>
+        /// Число пропущенных файлов (не изменялись с последнего перевода).
+        /// </summary>
         public int skippedOld = 0;
+
+        /// <summary>
+        /// Число пропущенных файлов (`autotranslated: false`).
+        /// </summary>
         public int skippedManual = 0;
+
+        /// <summary>
+        /// Число переведённых файлов.
+        /// </summary>
         public int translated = 0;
 
-        // переводит статью из файла, результат перевода записывает в файл
+        /// <summary>
+        /// Переводит статью из файла, результат перевода записывает в файл.
+        /// </summary>
+        /// <param name="fileName">Имя файла.</param>
         public void translateFile(string fileName)
         {
             string shortFileName = Path.GetFileName(fileName);
@@ -22,22 +39,22 @@ namespace DocTranslate
             StreamReader reader;
             string content;
 
-            // если уже существует файл .en.md 
+            // Если уже существует файл .en.md 
             if (File.Exists(newFile))
             {
                 reader = new StreamReader(newFile);
                 content = reader.ReadToEnd();
                 reader.Close();
 
-                // если .en.md изменён позже, чем .ru.md, топропускаем.
+                // Если .en.md изменён позже, чем .ru.md, то пропускаем.
                 if (File.GetLastWriteTimeUtc(newFile) > File.GetLastWriteTimeUtc(fileName))
                 {
                     skippedOld++;
                     return;
                 }
 
-                // если указан флаг autotranslated: false, то пропускаем.
-                if (content.Contains("autotranslated: false"))
+                Regex autotranslated = new Regex(@"\nautotranslated: *false", RegexOptions.IgnoreCase | RegexOptions.Singleline);
+                if (autotranslated.Match(content).Success)
                 {
                     skippedManual++;
                     Console.WriteLine($"File {newFile} is marked `autotranslated: false`. Skipping...");
@@ -52,14 +69,14 @@ namespace DocTranslate
 
             Regex patternCodeBlock = new Regex(@"```(?<примеркода>.*?)```", RegexOptions.Singleline);
 
-            // сначала уберём блоки кода, т.к. в них надо перевести только комментарии
+            // Сначала уберём блоки кода, т.к. в них надо перевести только комментарии.
             string preparedContent = patternCodeBlock.Replace(content, m => "cdblck" + m.Index);
 
-            // сами подготовим шапку файла
+            // Сами подготовим шапку файла.
             preparedContent = preparedContent.Replace("lang: ru", "lang: en \nautotranslated: true")
                                               .Replace("permalink: ru/", "permalink: en/");
 
-            // экранируем символы, с которыми не работает переводчик Yandex
+            // Экранируем символы, с которыми не работает переводчик Yandex.
             preparedContent = preparedContent.Replace("#", "Zgl") // данный символ недопустим - переводчик Yandex падает
                             .Replace(";", "tchkzpt") // по данному символу переводчик Yandex обрезает текст
                             .Replace("&", "mprsnd") // по данному символу переводчик Yandex обрезает текст
@@ -67,14 +84,14 @@ namespace DocTranslate
            
             string translatedContent = translateLongText(preparedContent);
 
-            // восстановим экранированные символы
+            // Восстановим экранированные символы.
             translatedContent = translatedContent.Replace("Zgl", "#")
                                                  .Replace("tchkzpt", ";")
                                                  .Replace("mprsnd", "&")
                                                  .Replace("pstrf", "`");
 
 
-            // восстановим блоки кода, переведя в них комментарии
+            // Восстановим блоки кода, переведя в них комментарии.
             for (int i = 0; i <= patternCodeBlock.Matches(content).Count - 1; i++)
             {
                 var m = patternCodeBlock.Matches(content)[i];
@@ -82,7 +99,7 @@ namespace DocTranslate
                     translateCodeBlock(m.Value));
             }
 
-            // добавим текст, необходимый согласно Лицензии на использование Яндекс.Переводчика
+            // Добавим текст, необходимый согласно Лицензии на использование Яндекс.Переводчик.
             translatedContent = translatedContent + "\n\n\n # Переведено сервисом «Яндекс.Переводчик» http://translate.yandex.ru/";
            
 
@@ -99,6 +116,11 @@ namespace DocTranslate
             translated++;
         }
 
+        /// <summary>
+        /// Передаёт содержимое в переводчик.
+        /// </summary>
+        /// <param name="preparedContent">Подготовленное содержимое.</param>
+        /// <returns>Переведённое содержимое</returns>
         private string translateLongText(string preparedContent)
         {
             YandexTranslator yt = new YandexTranslator();
@@ -108,12 +130,17 @@ namespace DocTranslate
                 return yt.Translate(preparedContent, "ru-en");
             }
 
-            // находим ближайший конец предложения (для упрощения заканчивающегося точкой)
+            // Находим ближайший конец предложения (для упрощения заканчивающегося точкой).
             int lastIndexOfDot = preparedContent.Substring(0, 3000).LastIndexOf('.');
             return yt.Translate(preparedContent.Substring(0, lastIndexOfDot+1), "ru-en") + translateLongText(preparedContent.Substring(lastIndexOfDot+1));
         }
 
-        // в блоке кода переводит комментарии, как однострочные, так и многострочные
+
+        /// <summary>
+        /// Метод, осуществляющий перевод комментариев в коде.
+        /// </summary>
+        /// <param name="codeStr">Блок кода.</param>
+        /// <returns>Блок кода с переведёнными комментариями.</returns>
         private string translateCodeBlock(string codeStr)
         {
             var blockComments = @"(/\*([^*]|[\r\n]|(\*+([^*/]|[\r\n])))*\*+/)";
