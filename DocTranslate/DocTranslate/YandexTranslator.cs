@@ -4,21 +4,12 @@
     using System.Net;
     using Newtonsoft.Json;
 
-    internal class Translation
-    {
-        public string Code { get; set; }
-
-        public string Lang { get; set; }
-
-        public string[] Text { get; set; }
-    }
-
     internal class YandexTranslator
     {
         public string Translate(string s, string lang)
         {
             // NB! Вставить ключ в App.config
-            string sAPIKey = System.Configuration.ConfigurationSettings.AppSettings["yandexAPIKey"];
+            string sAPIKey = System.Configuration.ConfigurationManager.AppSettings["yandexAPIKey"];
 
             if (s.Length > 0)
             {

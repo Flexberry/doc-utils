@@ -24,6 +24,9 @@
         /// </summary>
         private int translated = 0;
 
+        /// <summary>
+        /// Число пропущенных файлов (не изменялись с последнего перевода).
+        /// </summary>
         public int SkippedOld { get => this.skippedOld; set => this.skippedOld = value; }
 
         /// <summary>
@@ -47,7 +50,7 @@
             StreamReader reader;
             string content;
 
-            // Если уже существует файл .en.md
+            // Если уже существует файл .en.md.
             if (File.Exists(newFile))
             {
                 reader = new StreamReader(newFile);

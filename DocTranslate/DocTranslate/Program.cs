@@ -8,19 +8,19 @@
     {
         private static void Main(string[] args)
         {
-            string s_test_dir = System.Configuration.ConfigurationSettings.AppSettings["workingDirectory"];
-            Console.WriteLine($"Directory: {s_test_dir}");
+            string workingDirectory = System.Configuration.ConfigurationManager.AppSettings["workingDirectory"];
+            Console.WriteLine($"Directory: {workingDirectory}");
 
-            string[] fullfilesPath =
-                    Directory.GetFiles(s_test_dir, "*.ru.*", SearchOption.AllDirectories);
+            string[] fullFilePaths =
+                    Directory.GetFiles(workingDirectory, "*.ru.*", SearchOption.AllDirectories);
 
-            ArticleTranslator transl = new ArticleTranslator();
+            ArticleTranslator articleTranslator = new ArticleTranslator();
 
-            foreach (string fileName in fullfilesPath)
+            foreach (string fileName in fullFilePaths)
             {
                 try
                 {
-                    transl.TranslateFile(fileName);
+                    articleTranslator.TranslateFile(fileName);
                 }
                 catch (Exception exc)
                 {
@@ -30,7 +30,7 @@
                 }
             }
 
-            Console.WriteLine($"Ready!!!\n Skipped old: {transl.SkippedOld}, skipped manually translated: {transl.SkippedManual}, total translated: {transl.Translated}");
+            Console.WriteLine($"Ready!!!\n Skipped old: {articleTranslator.SkippedOld}, skipped manually translated: {articleTranslator.SkippedManual}, total translated: {articleTranslator.Translated}");
         }
     }
 }
