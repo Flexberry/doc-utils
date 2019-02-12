@@ -1,23 +1,18 @@
-﻿using DocTranslate;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FlexDocCheckLinks
+﻿namespace FlexDocCheckLinks
 {
-    class Program
+    using System;
+    using System.IO;
+    using DocTranslate;
+
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            string s_test_dir = @"C:\Users\svolkov.ICS_HOME\Desktop\dev\flexberry.github.io\pages\guides\base-tech\debugging";
+            string s_test_dir = System.Configuration.ConfigurationSettings.AppSettings["workingDirectory"];
             Console.WriteLine($"Directory: {s_test_dir}");
 
             string[] fullfilesPath =
-                    Directory.GetFiles(s_test_dir, "*.ru.*",
-                    SearchOption.AllDirectories);
+                    Directory.GetFiles(s_test_dir, "*.ru.*", SearchOption.AllDirectories);
 
             ArticleTranslator transl = new ArticleTranslator();
 
@@ -25,19 +20,17 @@ namespace FlexDocCheckLinks
             {
                 try
                 {
-                    transl.translateFile(fileName);
+                    transl.TranslateFile(fileName);
                 }
                 catch (Exception exc)
                 {
                     Console.WriteLine($"{fileName}\n");
                     Console.WriteLine(exc.Message);
                     Console.WriteLine(exc.StackTrace);
-                    
                 }
             }
 
-            Console.WriteLine($"Ready!!!\n Skipped old: {transl.skippedOld}, skipped manually translated: {transl.skippedManual}, total translated: {transl.translated}");
-
+            Console.WriteLine($"Ready!!!\n Skipped old: {transl.SkippedOld}, skipped manually translated: {transl.SkippedManual}, total translated: {transl.Translated}");
         }
     }
 }
