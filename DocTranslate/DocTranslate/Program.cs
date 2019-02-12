@@ -1,40 +1,36 @@
-﻿using DocTranslate;
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace FlexDocCheckLinks
+﻿namespace FlexDocCheckLinks
 {
-    class Program
+    using System;
+    using System.IO;
+    using DocTranslate;
+
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
-            string s_test_dir = @"C:\Users\Dasha\flexberry.github.io\pages\products\flexberry-winforms\controls";
-            s_test_dir = @"C:\Users\Dasha\flexberry.github.io\pages\products\flexberry-winforms";
+            string workingDirectory = System.Configuration.ConfigurationManager.AppSettings["workingDirectory"];
+            Console.WriteLine($"Directory: {workingDirectory}");
 
-            string[] fullfilesPath =
-                    Directory.GetFiles(s_test_dir, "fw_*.ru.*",
-                    SearchOption.AllDirectories);
+            string[] fullFilePaths =
+                    Directory.GetFiles(workingDirectory, "*.ru.*", SearchOption.AllDirectories);
 
-            ArticleTranslator transl = new ArticleTranslator();
+            ArticleTranslator articleTranslator = new ArticleTranslator();
 
-            foreach (string fileName in fullfilesPath)
+            foreach (string fileName in fullFilePaths)
             {
                 try
                 {
-                    transl.translateFile(fileName);
+                    articleTranslator.TranslateFile(fileName);
                 }
                 catch (Exception exc)
                 {
-                    Console.WriteLine(fileName);
+                    Console.WriteLine($"{fileName}\n");
+                    Console.WriteLine(exc.Message);
+                    Console.WriteLine(exc.StackTrace);
                 }
             }
 
-            Console.WriteLine("Ready!!!");
-
+            Console.WriteLine($"Ready!!!\n Skipped old: {articleTranslator.SkippedOld}, skipped manually translated: {articleTranslator.SkippedManual}, total translated: {articleTranslator.Translated}");
         }
     }
 }

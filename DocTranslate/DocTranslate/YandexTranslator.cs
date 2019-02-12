@@ -1,23 +1,15 @@
-﻿using System.IO;
-using System.Net;
-using Newtonsoft.Json;
-
-namespace DocTranslate
+﻿namespace DocTranslate
 {
+    using System.IO;
+    using System.Net;
+    using Newtonsoft.Json;
 
-    class Translation
-    {
-        public string code { get; set; }
-        public string lang { get; set; }
-        public string[] text { get; set; }
-    }
-
-    class YandexTranslator
+    internal class YandexTranslator
     {
         public string Translate(string s, string lang)
         {
-            // NB! Вставить ключ в следующей строке VVVV
-            string sAPIKey = "trnsl.1.1.201.... ТУТ КЛЮЧ, который надо получить на сайте translate.yandex.net";
+            // NB! Вставить ключ в App.config
+            string sAPIKey = System.Configuration.ConfigurationManager.AppSettings["yandexAPIKey"];
 
             if (s.Length > 0)
             {
@@ -27,7 +19,6 @@ namespace DocTranslate
                     + "&lang=" + lang);
 
                 WebResponse response = request.GetResponse();
-                
                 using (StreamReader stream = new StreamReader(response.GetResponseStream()))
                 {
                     string line;
@@ -36,9 +27,9 @@ namespace DocTranslate
                     {
                         Translation translation = JsonConvert.DeserializeObject<Translation>(line);
 
-                        s = "";
+                        s = string.Empty;
 
-                        foreach (string str in translation.text)
+                        foreach (string str in translation.Text)
                         {
                             s += str;
                         }
@@ -48,8 +39,9 @@ namespace DocTranslate
                 return s;
             }
             else
+            {
                 return string.Empty;
+            }
         }
-
     }
 }
