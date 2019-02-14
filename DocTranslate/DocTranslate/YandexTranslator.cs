@@ -10,6 +10,7 @@
         {
             // NB! Вставить ключ в App.config
             string sAPIKey = System.Configuration.ConfigurationManager.AppSettings["yandexAPIKey"];
+            System.Console.WriteLine(s);
 
             if (s.Length > 0)
             {

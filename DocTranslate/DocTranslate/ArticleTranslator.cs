@@ -76,7 +76,7 @@
             reader = new StreamReader(fileName);
             content = reader.ReadToEnd();
             reader.Close();
-
+            Console.WriteLine($"Переводим: {shortFileName}");
             Regex patternCodeBlock = new Regex(@"```(?<примеркода>.*?)```", RegexOptions.Singleline);
 
             // Сначала уберём блоки кода, т.к. в них надо перевести только комментарии.
@@ -87,11 +87,11 @@
                                               .Replace("permalink: ru/", "permalink: en/");
 
             // Экранируем символы, с которыми не работает переводчик Yandex.
-            preparedContent = preparedContent.Replace("#", "Zgl") // данный символ недопустим - переводчик Yandex падает
-                            .Replace(";", "tchkzpt") // по данному символу переводчик Yandex обрезает текст
-                            .Replace("&", "mprsnd") // по данному символу переводчик Yandex обрезает текст
-                            .Replace("`", "pstrf"); // данный символ переводчик Yandex удаляет
-
+            preparedContent = preparedContent.Replace("#", "Zgl") // Данный символ недопустим - переводчик Yandex падает.
+                            .Replace(";", "tchkzpt") // По данному символу переводчик Yandex обрезает текст.
+                            .Replace("&", "mprsnd") // По данному символу переводчик Yandex обрезает текст.
+                            .Replace("`", "pstrf"); // Данный символ переводчик Yandex удаляет.
+            
             string translatedContent = this.TranslateLongText(preparedContent);
 
             // Восстановим экранированные символы.
@@ -142,7 +142,16 @@
 
             // Находим ближайший конец предложения (для упрощения заканчивающегося точкой).
             int lastIndexOfDot = preparedContent.Substring(0, 3000).LastIndexOf('.');
-            return yt.Translate(preparedContent.Substring(0, lastIndexOfDot + 1), "ru-en") + this.TranslateLongText(preparedContent.Substring(lastIndexOfDot + 1));
+            string firstHalf = preparedContent.Substring(0, lastIndexOfDot + 1);
+            string secondHalf = preparedContent.Substring(lastIndexOfDot + 1);
+            if (firstHalf != string.Empty && secondHalf != string.Empty)
+            {
+                return yt.Translate(firstHalf, "ru-en") + this.TranslateLongText(secondHalf);
+            }
+            else
+            {
+                return string.Empty;
+            }
         }
 
         /// <summary>
@@ -156,11 +165,24 @@
             var lineComments = @"//(.*?)\r?\n";
             var strings = @"""((\\[^;\n]|[^"";\n])*)""";
             var verbatimStrings = @"@(""[^""]*"")+";
+            var htmlComment = @"(?=<!--)([\s\S]*?)-->";
 
-            Regex pattern = new Regex(blockComments + "|" + lineComments + "|" + strings + "|" + verbatimStrings, RegexOptions.Compiled);
+            Regex pattern = new Regex(blockComments + "|" + lineComments + "|" + strings + "|" + verbatimStrings + "|" + htmlComment, RegexOptions.Compiled);
+
+            codeStr = codeStr.Replace("#", "Zgl") // Данный символ недопустим - переводчик Yandex падает.
+                .Replace(";", "tchkzpt") // По данному символу переводчик Yandex обрезает текст.
+                .Replace("&", "mprsnd") // По данному символу переводчик Yandex обрезает текст.
+                .Replace("`", "pstrf"); // Данный символ переводчик Yandex удаляет.
 
             YandexTranslator yt = new YandexTranslator();
-            return pattern.Replace(codeStr, m => yt.Translate(m.Value, "ru-en"));
+            string res = pattern.Replace(codeStr, m => yt.Translate(m.Value, "ru-en"));
+
+            // Восстановим экранированные символы.
+            res = res.Replace("Zgl", "#")
+                                        .Replace("tchkzpt", ";")
+                                        .Replace("mprsnd", "&")
+                                        .Replace("pstrf", "`");
+            return res;
         }
     }
 }
