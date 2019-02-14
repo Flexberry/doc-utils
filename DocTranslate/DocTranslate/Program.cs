@@ -12,7 +12,7 @@
             Console.WriteLine($"Directory: {workingDirectory}");
 
             string[] fullFilePaths =
-                    Directory.GetFiles(workingDirectory, "*.ru.*", SearchOption.AllDirectories);
+                    Directory.GetFiles(workingDirectory, "*.ru.md", SearchOption.AllDirectories);
 
             ArticleTranslator articleTranslator = new ArticleTranslator();
 
@@ -24,7 +24,7 @@
                 }
                 catch (Exception exc)
                 {
-                    Console.WriteLine($"{fileName}\n");
+                    Console.WriteLine($"\n{fileName}\n");
                     Console.WriteLine(exc.Message);
                     Console.WriteLine(exc.StackTrace);
                 }
