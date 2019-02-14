@@ -87,11 +87,11 @@
                                               .Replace("permalink: ru/", "permalink: en/");
 
             // Экранируем символы, с которыми не работает переводчик Yandex.
-            preparedContent = preparedContent.Replace("#", "Zgl") // данный символ недопустим - переводчик Yandex падает
-                            .Replace(";", "tchkzpt") // по данному символу переводчик Yandex обрезает текст
-                            .Replace("&", "mprsnd") // по данному символу переводчик Yandex обрезает текст
-                            .Replace("`", "pstrf"); // данный символ переводчик Yandex удаляет
-
+            preparedContent = preparedContent.Replace("#", "Zgl") // Данный символ недопустим - переводчик Yandex падает.
+                            .Replace(";", "tchkzpt") // По данному символу переводчик Yandex обрезает текст.
+                            .Replace("&", "mprsnd") // По данному символу переводчик Yandex обрезает текст.
+                            .Replace("`", "pstrf"); // Данный символ переводчик Yandex удаляет.
+            
             string translatedContent = this.TranslateLongText(preparedContent);
 
             // Восстановим экранированные символы.
@@ -169,10 +169,10 @@
 
             Regex pattern = new Regex(blockComments + "|" + lineComments + "|" + strings + "|" + verbatimStrings + "|" + htmlComment, RegexOptions.Compiled);
 
-            codeStr = codeStr.Replace("#", "Zgl") // данный символ недопустим - переводчик Yandex падает
-                .Replace(";", "tchkzpt") // по данному символу переводчик Yandex обрезает текст
-                .Replace("&", "mprsnd") // по данному символу переводчик Yandex обрезает текст
-                .Replace("`", "pstrf"); // данный символ переводчик Yandex удаляет
+            codeStr = codeStr.Replace("#", "Zgl") // Данный символ недопустим - переводчик Yandex падает.
+                .Replace(";", "tchkzpt") // По данному символу переводчик Yandex обрезает текст.
+                .Replace("&", "mprsnd") // По данному символу переводчик Yandex обрезает текст.
+                .Replace("`", "pstrf"); // Данный символ переводчик Yandex удаляет.
 
             YandexTranslator yt = new YandexTranslator();
             string res = pattern.Replace(codeStr, m => yt.Translate(m.Value, "ru-en"));
