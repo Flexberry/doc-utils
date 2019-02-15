@@ -152,11 +152,11 @@
         /// <returns>Переведённое содержимое</returns>
         private string TranslateLongText(string preparedContent)
         {
-            YandexTranslator yt = new YandexTranslator(SAPIKey);
+            YandexTranslator yandexTranslator = new YandexTranslator(SAPIKey);
 
             if (preparedContent.Length <= 3000)
             {
-                return yt.Translate(preparedContent, "ru-en");
+                return yandexTranslator.Translate(preparedContent, "ru-en");
             }
 
             // Находим ближайший конец предложения (для упрощения заканчивающегося точкой).
@@ -165,7 +165,7 @@
             string secondHalf = preparedContent.Substring(lastIndexOfDot + 1);
             if (firstHalf != string.Empty && secondHalf != string.Empty)
             {
-                return yt.Translate(firstHalf, "ru-en") + this.TranslateLongText(secondHalf);
+                return yandexTranslator.Translate(firstHalf, "ru-en") + this.TranslateLongText(secondHalf);
             }
             else
             {
@@ -193,8 +193,8 @@
                 .Replace("&", "mprsnd") // По данному символу переводчик Yandex обрезает текст.
                 .Replace("`", "pstrf"); // Данный символ переводчик Yandex удаляет.
 
-            YandexTranslator yt = new YandexTranslator(SAPIKey);
-            string res = pattern.Replace(codeStr, m => yt.Translate(m.Value, "ru-en"));
+            YandexTranslator yandexTranslator = new YandexTranslator(SAPIKey);
+            string res = pattern.Replace(codeStr, m => yandexTranslator.Translate(m.Value, "ru-en"));
 
             // Восстановим экранированные символы.
             res = res.Replace("Zgl", "#")
