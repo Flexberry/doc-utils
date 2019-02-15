@@ -10,7 +10,7 @@
     internal class ArticleTranslator
     {
         /// <summary>
-        /// Ключ Yandex Translator API
+        /// Ключ Yandex Translator API.
         /// </summary>
         private string sAPIKey;
 
@@ -45,14 +45,14 @@
         public int Translated { get => this.translated; set => this.translated = value; }
 
         /// <summary>
-        /// Ключ Yandex Translator API
+        /// Ключ Yandex Translator API.
         /// </summary>
         public string SAPIKey { get => sAPIKey; set => sAPIKey = value; }
 
         /// <summary>
-        /// Конструктор класса ArticleTranslator
+        /// Конструктор класса ArticleTranslator.
         /// </summary>
-        /// <param name="sAPIKey">Ключ API Yandex Translate</param>
+        /// <param name="sAPIKey">Ключ API Yandex Translate.</param>
         public ArticleTranslator(string sAPIKey)
         {
             this.SAPIKey = sAPIKey;
@@ -110,7 +110,7 @@
                             .Replace(";", "tchkzpt") // По данному символу переводчик Yandex обрезает текст.
                             .Replace("&", "mprsnd") // По данному символу переводчик Yandex обрезает текст.
                             .Replace("`", "pstrf"); // Данный символ переводчик Yandex удаляет.
-            
+
             string translatedContent = this.TranslateLongText(preparedContent);
 
             // Восстановим экранированные символы.

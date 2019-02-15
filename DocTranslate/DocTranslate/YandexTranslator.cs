@@ -7,19 +7,19 @@
     internal class YandexTranslator
     {
         /// <summary>
-        /// Ключ Yandex Translator API
+        /// Ключ Yandex Translator API.
         /// </summary>
         private string sAPIKey;
 
         /// <summary>
-        /// Ключ Yandex Translator API
+        /// Ключ Yandex Translator API.
         /// </summary>
         public string SAPIKey { get => sAPIKey; set => sAPIKey = value; }
 
         /// <summary>
-        /// Конструктор класса YandexTranslator
+        /// Конструктор класса YandexTranslator.
         /// </summary>
-        /// <param name="sAPIKey">Ключ API Yandex Translate</param>
+        /// <param name="sAPIKey">Ключ API Yandex Translate.</param>
         public YandexTranslator(string sAPIKey)
         {
             this.SAPIKey = sAPIKey;
