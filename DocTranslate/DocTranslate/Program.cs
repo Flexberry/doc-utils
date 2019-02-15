@@ -8,12 +8,18 @@
     {
         private static void Main(string[] args)
         {
-            string workingDirectory = System.Configuration.ConfigurationManager.AppSettings["workingDirectory"];
+            if (args.Length < 2)
+            {
+                throw new Exception("Missing args: path to files and/or Yandex API key");
+            }
+
+            string workingDirectory = args[0];
+            string sAPIKey = args[1];
             Console.WriteLine($"Directory: {workingDirectory}");
 
             string[] fullFilePaths = Directory.GetFiles(workingDirectory, "*.ru.md", SearchOption.AllDirectories);
 
-            ArticleTranslator articleTranslator = new ArticleTranslator();
+            ArticleTranslator articleTranslator = new ArticleTranslator(sAPIKey);
 
             foreach (string fileName in fullFilePaths)
             {

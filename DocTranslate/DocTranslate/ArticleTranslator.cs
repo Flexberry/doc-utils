@@ -10,6 +10,11 @@
     internal class ArticleTranslator
     {
         /// <summary>
+        /// Ключ Yandex Translator API
+        /// </summary>
+        private string sAPIKey;
+
+        /// <summary>
         /// Число пропущенных файлов (не изменялись с последнего перевода).
         /// </summary>
         private int skippedOld = 0;
@@ -38,6 +43,20 @@
         /// Число переведённых файлов.
         /// </summary>
         public int Translated { get => this.translated; set => this.translated = value; }
+
+        /// <summary>
+        /// Ключ Yandex Translator API
+        /// </summary>
+        public string SAPIKey { get => sAPIKey; set => sAPIKey = value; }
+
+        /// <summary>
+        /// Конструктор класса ArticleTranslator
+        /// </summary>
+        /// <param name="sAPIKey">Ключ API Yandex Translate</param>
+        public ArticleTranslator(string sAPIKey)
+        {
+            this.SAPIKey = sAPIKey;
+        }
 
         /// <summary>
         /// Переводит статью из файла, результат перевода записывает в файл.
@@ -133,7 +152,7 @@
         /// <returns>Переведённое содержимое</returns>
         private string TranslateLongText(string preparedContent)
         {
-            YandexTranslator yt = new YandexTranslator();
+            YandexTranslator yt = new YandexTranslator(SAPIKey);
 
             if (preparedContent.Length <= 3000)
             {
@@ -174,7 +193,7 @@
                 .Replace("&", "mprsnd") // По данному символу переводчик Yandex обрезает текст.
                 .Replace("`", "pstrf"); // Данный символ переводчик Yandex удаляет.
 
-            YandexTranslator yt = new YandexTranslator();
+            YandexTranslator yt = new YandexTranslator(SAPIKey);
             string res = pattern.Replace(codeStr, m => yt.Translate(m.Value, "ru-en"));
 
             // Восстановим экранированные символы.
