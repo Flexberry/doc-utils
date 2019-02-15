@@ -27,8 +27,6 @@
 
         public string Translate(string s, string lang)
         {
-            System.Console.WriteLine(s);
-
             if (s.Length > 0)
             {
                 WebRequest request = WebRequest.Create("https://translate.yandex.net/api/v1.5/tr.json/translate?"
