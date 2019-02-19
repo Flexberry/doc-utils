@@ -95,7 +95,7 @@
             reader = new StreamReader(fileName);
             content = reader.ReadToEnd();
             reader.Close();
-            Console.WriteLine($"Переводим: {shortFileName}");
+            Console.WriteLine($"Translating: {shortFileName}");
             Regex patternCodeBlock = new Regex(@"```(?<примеркода>.*?)```", RegexOptions.Singleline);
 
             // Сначала уберём блоки кода, т.к. в них надо перевести только комментарии.
