@@ -2,6 +2,8 @@
 {
     using System;
     using System.IO;
+    using System.Security.Cryptography;
+    using System.Text;
     using System.Text.RegularExpressions;
 
     /// <summary>
@@ -67,24 +69,45 @@
             string shortFileName = Path.GetFileName(fileName);
             string newFile = Path.Combine(Path.GetDirectoryName(fileName), shortFileName.Replace(".ru.", ".en."));
             StreamReader reader;
-            string content;
+            string existingEn;
+
+            reader = new StreamReader(fileName);
+            string existingRu = reader.ReadToEnd();
+            reader.Close();
+
+            // Посчитаем хэш статьи на русском.
+            SHA256 newHash = SHA256.Create();
+            byte[] bytes = newHash.ComputeHash(Encoding.Default.GetBytes(existingRu));
+            StringBuilder builder = new StringBuilder();
+            for (int i = 0; i < bytes.Length; i++)
+            {
+                builder.Append(bytes[i].ToString("x2"));
+            }
+
+            string newHashString = builder.ToString();
 
             // Если уже существует файл .en.md.
             if (File.Exists(newFile))
             {
                 reader = new StreamReader(newFile);
-                content = reader.ReadToEnd();
+                existingEn = reader.ReadToEnd();
                 reader.Close();
 
-                // Если .en.md изменён позже, чем .ru.md, то пропускаем.
-                if (File.GetLastWriteTimeUtc(newFile) > File.GetLastWriteTimeUtc(fileName))
+                // Считаем старый хэш статьи на русском из переведённого файла.
+                Regex hash = new Regex(@"\nhash: .{64}", RegexOptions.Singleline);
+                Match newFileMatch = hash.Match(existingEn); //берем хеш из переведённого
+                string matchValue = newFileMatch.Value;
+                string oldHashString = matchValue.Substring(matchValue.Length - 64, 64);
+
+                // Если старый хэш и новый хэш совпали, пропустим статью
+                if (oldHashString == newHashString)
                 {
                     this.SkippedOld++;
                     return;
                 }
 
                 Regex autotranslated = new Regex(@"\nautotranslated: *false", RegexOptions.IgnoreCase | RegexOptions.Singleline);
-                if (autotranslated.Match(content).Success)
+                if (autotranslated.Match(existingEn).Success)
                 {
                     this.SkippedManual++;
                     Console.WriteLine($"File {newFile} is marked `autotranslated: false`. Skipping...");
@@ -92,17 +115,14 @@
                 }
             }
 
-            reader = new StreamReader(fileName);
-            content = reader.ReadToEnd();
-            reader.Close();
             Console.WriteLine($"Translating: {shortFileName}");
             Regex patternCodeBlock = new Regex(@"```(?<примеркода>.*?)```", RegexOptions.Singleline);
 
             // Сначала уберём блоки кода, т.к. в них надо перевести только комментарии.
-            string preparedContent = patternCodeBlock.Replace(content, m => "cdblck" + m.Index);
+            string preparedContent = patternCodeBlock.Replace(existingRu, m => "cdblck" + m.Index);
 
             // Сами подготовим шапку файла.
-            preparedContent = preparedContent.Replace("lang: ru", "lang: en \nautotranslated: true")
+            preparedContent = preparedContent.Replace("lang: ru", $"lang: en \nautotranslated: true \nhash: {newHashString}")
                                               .Replace("permalink: ru/", "permalink: en/");
 
             // Экранируем символы, с которыми не работает переводчик Yandex.
@@ -120,9 +140,9 @@
                                                  .Replace("pstrf", "`");
 
             // Восстановим блоки кода, переведя в них комментарии.
-            for (int i = 0; i <= patternCodeBlock.Matches(content).Count - 1; i++)
+            for (int i = 0; i <= patternCodeBlock.Matches(existingRu).Count - 1; i++)
             {
-                var m = patternCodeBlock.Matches(content)[i];
+                var m = patternCodeBlock.Matches(existingRu)[i];
                 translatedContent = translatedContent.Replace(
                     "cdblck" + m.Index,
                     this.TranslateCodeBlock(m.Value));
