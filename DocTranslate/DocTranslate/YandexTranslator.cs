@@ -6,12 +6,27 @@
 
     internal class YandexTranslator
     {
+        /// <summary>
+        /// Ключ Yandex Translator API.
+        /// </summary>
+        private string sAPIKey;
+
+        /// <summary>
+        /// Ключ Yandex Translator API.
+        /// </summary>
+        public string SAPIKey { get => sAPIKey; set => sAPIKey = value; }
+
+        /// <summary>
+        /// Конструктор класса YandexTranslator.
+        /// </summary>
+        /// <param name="sAPIKey">Ключ API Yandex Translate.</param>
+        public YandexTranslator(string sAPIKey)
+        {
+            this.SAPIKey = sAPIKey;
+        }
+
         public string Translate(string s, string lang)
         {
-            // NB! Вставить ключ в App.config
-            string sAPIKey = System.Configuration.ConfigurationManager.AppSettings["yandexAPIKey"];
-            System.Console.WriteLine(s);
-
             if (s.Length > 0)
             {
                 WebRequest request = WebRequest.Create("https://translate.yandex.net/api/v1.5/tr.json/translate?"
