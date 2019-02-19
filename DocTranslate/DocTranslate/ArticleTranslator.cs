@@ -96,14 +96,17 @@
                 // Считаем старый хэш статьи на русском из переведённого файла.
                 Regex hash = new Regex(@"\nhash: .{64}", RegexOptions.Singleline);
                 Match newFileMatch = hash.Match(existingEn); //берем хеш из переведённого
-                string matchValue = newFileMatch.Value;
-                string oldHashString = matchValue.Substring(matchValue.Length - 64, 64);
-
-                // Если старый хэш и новый хэш совпали, пропустим статью
-                if (oldHashString == newHashString)
+                if (newFileMatch.Success)
                 {
-                    this.SkippedOld++;
-                    return;
+                    string matchValue = newFileMatch.Value;
+                    string oldHashString = matchValue.Substring(matchValue.Length - 64, 64);
+
+                    // Если старый хэш и новый хэш совпали, пропустим статью
+                    if (oldHashString == newHashString)
+                    {
+                        this.SkippedOld++;
+                        return;
+                    }
                 }
 
                 Regex autotranslated = new Regex(@"\nautotranslated: *false", RegexOptions.IgnoreCase | RegexOptions.Singleline);

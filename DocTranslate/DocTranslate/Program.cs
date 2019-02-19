@@ -21,17 +21,22 @@
 
             ArticleTranslator articleTranslator = new ArticleTranslator(sAPIKey);
 
+            int counter = 0;
+
             foreach (string fileName in fullFilePaths)
             {
+                Console.WriteLine($"{counter} out of {fullFilePaths.Length}");
                 try
                 {
                     articleTranslator.TranslateFile(fileName);
+                    counter++;
                 }
                 catch (Exception exc)
                 {
                     Console.WriteLine($"{Environment.NewLine}{fileName}{Environment.NewLine}");
                     Console.WriteLine(exc.Message);
                     Console.WriteLine(exc.StackTrace);
+                    break;
                 }
             }
 
