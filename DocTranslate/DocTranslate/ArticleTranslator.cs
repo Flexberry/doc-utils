@@ -73,11 +73,12 @@
 
             reader = new StreamReader(fileName);
             string existingRu = reader.ReadToEnd();
+            string strForHash = existingRu.Replace('\n', ' ').Replace('\r', ' ');
             reader.Close();
 
             // Посчитаем хэш статьи на русском.
             SHA256 newHash = SHA256.Create();
-            byte[] bytes = newHash.ComputeHash(Encoding.Default.GetBytes(existingRu));
+            byte[] bytes = newHash.ComputeHash(Encoding.Default.GetBytes(strForHash));
             StringBuilder builder = new StringBuilder();
             for (int i = 0; i < bytes.Length; i++)
             {
