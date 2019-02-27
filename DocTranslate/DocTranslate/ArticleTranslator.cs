@@ -96,7 +96,7 @@
 
                 // Считаем старый хэш статьи на русском из переведённого файла.
                 Regex hash = new Regex(@"\nhash: .{64}", RegexOptions.Singleline);
-                Match newFileMatch = hash.Match(existingEn); //берем хеш из переведённого
+                Match newFileMatch = hash.Match(existingEn); 
                 if (newFileMatch.Success)
                 {
                     string matchValue = newFileMatch.Value;
