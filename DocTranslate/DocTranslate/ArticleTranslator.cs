@@ -72,8 +72,8 @@
             string existingEn;
 
             reader = new StreamReader(fileName);
-            string existingRu = reader.ReadToEnd();
-            string strForHash = existingRu.Replace('\n', ' ').Replace('\r', ' ');
+            string existingRu = reader.ReadToEnd().Replace("«", "`").Replace("»", "`");
+            string strForHash = existingRu.Replace("\n", string.Empty).Replace("\r", string.Empty);
             reader.Close();
 
             // Посчитаем хэш статьи на русском.
