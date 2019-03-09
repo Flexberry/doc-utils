@@ -72,7 +72,7 @@
             string existingEn;
 
             reader = new StreamReader(fileName);
-            string existingRu = reader.ReadToEnd().Replace("«", "`").Replace("»", "`");
+            string existingRu = reader.ReadToEnd();
             string strForHash = existingRu.Replace("\n", string.Empty).Replace("\r", string.Empty);
             reader.Close();
 
@@ -133,7 +133,9 @@
             preparedContent = preparedContent.Replace("#", "Zgl") // Данный символ недопустим - переводчик Yandex падает.
                             .Replace(";", "tchkzpt") // По данному символу переводчик Yandex обрезает текст.
                             .Replace("&", "mprsnd") // По данному символу переводчик Yandex обрезает текст.
-                            .Replace("`", "pstrf"); // Данный символ переводчик Yandex удаляет.
+                            .Replace("`", "pstrf") // Данный символ переводчик Yandex удаляет.
+                            .Replace("«", "qmo ") // Данный символ возвращает как " и ломает {{%include ...}}
+                            .Replace("»", " qmc"); 
 
             string translatedContent = this.TranslateLongText(preparedContent);
 
@@ -141,7 +143,9 @@
             translatedContent = translatedContent.Replace("Zgl", "#")
                                                  .Replace("tchkzpt", ";")
                                                  .Replace("mprsnd", "&")
-                                                 .Replace("pstrf", "`");
+                                                 .Replace("pstrf", "`")
+                                                 .Replace("qmo ", "«") // Данный символ возвращает как " и ломает {{%include ...}}
+                                                 .Replace(" qmc", "»");
 
             // Восстановим блоки кода, переведя в них комментарии.
             for (int i = 0; i <= patternCodeBlock.Matches(existingRu).Count - 1; i++)
