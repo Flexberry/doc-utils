@@ -12,6 +12,11 @@
     internal class ArticleTranslator
     {
         /// <summary>
+        /// Строка подписи по требованиям Яндекс.
+        /// </summary>
+        private string yandexSignature = "{% include callout.html content=\"Переведено сервисом «Яндекс.Переводчик» <http://translate.yandex.ru>\" type=\"info\" %}";
+
+        /// <summary>
         /// Ключ Yandex Translator API.
         /// </summary>
         private string sAPIKey;
@@ -157,7 +162,7 @@
             }
 
             // Добавим текст, необходимый согласно Лицензии на использование Яндекс.Переводчик.
-            translatedContent = translatedContent + "\n\n\n # Переведено сервисом «Яндекс.Переводчик» http://translate.yandex.ru/";
+            translatedContent = translatedContent + this.yandexSignature;
 
             if (!File.Exists(newFile))
             {
