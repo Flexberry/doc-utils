@@ -14,7 +14,7 @@
         /// <summary>
         /// Строка подписи по требованиям Яндекс.
         /// </summary>
-        private string yandexSignature = "{% include callout.html content=\"Переведено сервисом «Яндекс.Переводчик» <http://translate.yandex.ru>\" type=\"info\" %}";
+        private string yandexSignature = "\n\n\n{% include callout.html content=\"Переведено сервисом «Яндекс.Переводчик» <http://translate.yandex.ru>\" type=\"info\" %}";
 
         /// <summary>
         /// Ключ Yandex Translator API.
