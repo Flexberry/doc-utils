@@ -101,7 +101,7 @@
 
                 // Считаем старый хэш статьи на русском из переведённого файла.
                 Regex hash = new Regex(@"\nhash: .{64}", RegexOptions.Singleline);
-                Match newFileMatch = hash.Match(existingEn); 
+                Match newFileMatch = hash.Match(existingEn);
                 if (newFileMatch.Success)
                 {
                     string matchValue = newFileMatch.Value;
@@ -131,11 +131,11 @@
             string preparedContent = patternCodeBlock.Replace(existingRu, m => "cdblck" + m.Index);
 
             // Сами подготовим шапку файла.
-            preparedContent = preparedContent.Replace("lang: ru", $"lang: en \nautotranslated: true \nhash: {newHashString}")
+            preparedContent = preparedContent.Replace("lang: ru", $"lang: en\nautotranslated: true\nhash: {newHashString}")
                                               .Replace("permalink: ru/", "permalink: en/");
 
             // Экранируем символы, с которыми не работает переводчик Yandex.
-            preparedContent = preparedContent.Replace("#", "Zgl") // Данный символ недопустим - переводчик Yandex падает.
+            preparedContent = preparedContent.Replace("#", "Zgl.") // Данный символ недопустим - переводчик Yandex падает.
                             .Replace(";", "tchkzpt") // По данному символу переводчик Yandex обрезает текст.
                             .Replace("&", "mprsnd") // По данному символу переводчик Yandex обрезает текст.
                             .Replace("`", "pstrf") // Данный символ переводчик Yandex удаляет.
@@ -145,12 +145,14 @@
             string translatedContent = this.TranslateLongText(preparedContent);
 
             // Восстановим экранированные символы.
-            translatedContent = translatedContent.Replace("Zgl", "#")
+            translatedContent = translatedContent.Replace("Zgl.", "#")
                                                  .Replace("tchkzpt", ";")
                                                  .Replace("mprsnd", "&")
                                                  .Replace("pstrf", "`")
                                                  .Replace("qmo ", "«") // Данный символ возвращает как " и ломает {{%include ...}}
-                                                 .Replace(" qmc", "»");
+                                                 .Replace(" qmc", "»")
+                                                 .Replace(" \n", "\n"); // Яндекс заменяет последовательность \r\n на _\n.
+
 
             // Восстановим блоки кода, переведя в них комментарии.
             for (int i = 0; i <= patternCodeBlock.Matches(existingRu).Count - 1; i++)
