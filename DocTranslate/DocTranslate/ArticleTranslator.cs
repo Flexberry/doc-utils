@@ -135,7 +135,7 @@
                                               .Replace("permalink: ru/", "permalink: en/");
 
             // Экранируем символы, с которыми не работает переводчик Yandex.
-            preparedContent = preparedContent.Replace("#", "Zgl") // Данный символ недопустим - переводчик Yandex падает.
+            preparedContent = preparedContent.Replace("#", "Zgl.") // Данный символ недопустим - переводчик Yandex падает.
                             .Replace(";", "tchkzpt") // По данному символу переводчик Yandex обрезает текст.
                             .Replace("&", "mprsnd") // По данному символу переводчик Yandex обрезает текст.
                             .Replace("`", "pstrf") // Данный символ переводчик Yandex удаляет.
@@ -145,7 +145,7 @@
             string translatedContent = this.TranslateLongText(preparedContent);
 
             // Восстановим экранированные символы.
-            translatedContent = translatedContent.Replace("Zgl", "#")
+            translatedContent = translatedContent.Replace("Zgl.", "#")
                                                  .Replace("tchkzpt", ";")
                                                  .Replace("mprsnd", "&")
                                                  .Replace("pstrf", "`")
