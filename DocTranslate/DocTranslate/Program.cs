@@ -8,9 +8,22 @@
     {
         private static void Main(string[] args)
         {
-            if (args.Length < 2)
+            bool force = false;
+            if (args.Length < 2 || args.Length > 3)
             {
-                throw new Exception("Missing args: path to files and/or Yandex API key");
+                throw new Exception("Incorrect args. First arg should be working directory. Second arg should be API key. Third arg (optional) word 'force' if force translation is required.");
+            }
+
+            if (args.Length == 3)
+            {
+                force = args[2] == "force";
+                if (force)
+                {
+                    Console.WriteLine("WARN: Force mode on!");
+                } else
+                {
+                    Console.WriteLine($"WARN: Expected 'force' as third arg, got {args[2]}");
+                }
             }
 
             string workingDirectory = args[0];
@@ -19,7 +32,7 @@
 
             string[] fullFilePaths = Directory.GetFiles(workingDirectory, "*.ru.md", SearchOption.AllDirectories);
 
-            ArticleTranslator articleTranslator = new ArticleTranslator(sAPIKey);
+            ArticleTranslator articleTranslator = new ArticleTranslator(sAPIKey, force);
 
             int counter = 0;
 

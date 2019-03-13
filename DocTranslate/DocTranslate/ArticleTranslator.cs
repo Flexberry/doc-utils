@@ -17,6 +17,11 @@
         private string yandexSignature = "\n\n\n{% include callout.html content=\"Переведено сервисом «Яндекс.Переводчик» <http://translate.yandex.ru>\" type=\"info\" %}";
 
         /// <summary>
+        /// Флаг, позволяющий принудительно перевести все строки.
+        /// </summary>
+        private bool force = false;
+
+        /// <summary>
         /// Ключ Yandex Translator API.
         /// </summary>
         private string sAPIKey;
@@ -57,12 +62,19 @@
         public string SAPIKey { get => sAPIKey; set => sAPIKey = value; }
 
         /// <summary>
+        /// Флаг, позволяющий принудительно перевести все строки.
+        /// </summary>
+        public bool Force { get => force; set => force = value; }
+
+        /// <summary>
         /// Конструктор класса ArticleTranslator.
         /// </summary>
         /// <param name="sAPIKey">Ключ API Yandex Translate.</param>
-        public ArticleTranslator(string sAPIKey)
+        /// <param name="force">Принуительный перевод статей.</param>
+        public ArticleTranslator(string sAPIKey, bool force)
         {
             this.SAPIKey = sAPIKey;
+            this.force = force;
         }
 
         /// <summary>
@@ -108,7 +120,7 @@
                     string oldHashString = matchValue.Substring(matchValue.Length - 64, 64);
 
                     // Если старый хэш и новый хэш совпали, пропустим статью
-                    if (oldHashString == newHashString)
+                    if (oldHashString == newHashString && !this.Force)
                     {
                         this.SkippedOld++;
                         return;
