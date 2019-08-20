@@ -1,5 +1,6 @@
 ﻿namespace DocTranslate
 {
+    using System.Configuration;
     using System.IO;
     using System.Net;
     using Newtonsoft.Json;
@@ -33,6 +34,19 @@
                     + "key=" + sAPIKey
                     + "&text=" + s
                     + "&lang=" + lang);
+
+                bool useProxy = false;
+                string proxyUrl = ConfigurationManager.AppSettings["ProxyUrl"];
+                int proxyPort = 0;
+                if (!string.IsNullOrEmpty(proxyUrl))
+                {
+                    useProxy = int.TryParse(ConfigurationManager.AppSettings["ProxyPort"], out proxyPort);
+                }
+
+                if (useProxy)
+                {
+                    request.Proxy = new WebProxy(proxyUrl, proxyPort);
+                }
 
                 WebResponse response = request.GetResponse();
                 using (StreamReader stream = new StreamReader(response.GetResponseStream()))
